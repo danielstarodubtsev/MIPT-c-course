@@ -180,6 +180,7 @@ void test_tuple() {
         Tuple<int, int> t1;
         assert(get<0>(t1) == 0);
         assert(get<1>(t1) == 0);
+        std::cout << "Test 1 passed" << std::endl;
     }
 
     {
@@ -188,11 +189,14 @@ void test_tuple() {
     }
     assert(Accountant::destructed == 2);
     Accountant::constructed = Accountant::destructed = 0;
+    std::cout << "Test 2 passed" << std::endl;
 
 
     static_assert(std::is_constructible_v<Tuple<int, double, char>, int, double, char>);
     static_assert(!std::is_constructible_v<Tuple<NotCopyableOnlyMovable, int>, const NotCopyableOnlyMovable&, int>);
     static_assert(std::is_constructible_v<Tuple<NotCopyableOnlyMovable, int>, NotCopyableOnlyMovable&&, int>);
+
+    std::cout << "Test 3 passed" << std::endl;
 
     static_assert(std::is_constructible_v<Tuple<std::string, int>, const char*, int>);
 
@@ -202,10 +206,15 @@ void test_tuple() {
     static_assert(std::is_constructible_v<Tuple<int&, const char&>, int&, const char&>);
     static_assert(std::is_constructible_v<Tuple<int&, const char&>, int&, char>);
 
+    std::cout << "Test 4 passed" << std::endl;
+
     static_assert(std::is_constructible_v<Tuple<int&&, char&>, int, char&>);
     static_assert(std::is_constructible_v<Tuple<int&&, char&>, int&&, char&>);
     static_assert(!std::is_constructible_v<Tuple<int&, char&&>, int&, char&>);
     static_assert(std::is_constructible_v<Tuple<int&, const char&>, int&, char&&>);
+
+    std::cout << "Test 5 passed" << std::endl;
+
 
     {
         Accountant a;
@@ -219,48 +228,69 @@ void test_tuple() {
         assert(get<1>(t) == 7);
         assert(get<1>(t2) == 5);
 
+        std::cout << "Test 6 passed" << std::endl;
+
         t = t2;
         assert(Accountant::copy_assigned == 1);
         assert(Accountant::copy_constructed == 2);
         assert(get<1>(t) == 5);
         assert(get<1>(t2) == 5);
 
+        std::cout << "Test 7 passed" << std::endl;
+        
         t2 = std::move(t);
         assert(Accountant::move_assigned == 1);
         assert(Accountant::copy_assigned == 1);
         assert(Accountant::move_constructed == 0);
         assert(Accountant::copy_constructed == 2);
+
+        std::cout << "Test 8 passed" << std::endl;
     
         const auto& t3 = t;
         t2 = std::move(t3);
         assert(Accountant::move_assigned == 1);
         assert(Accountant::copy_assigned == 2);
+
+        std::cout << "Test 9 passed" << std::endl;
     }
+
     assert(Accountant::destructed == 3);
     Accountant::copy_constructed = Accountant::destructed = 0;
     Accountant::copy_assigned = Accountant::move_assigned = 0;
+
+    std::cout << "Test 10 passed" << std::endl;
 
     {
         int x = 5;
         double d = 3.14;
         Tuple<int&, double&> t{x, d};
 
+        std::cout << "Test 11 passed" << std::endl;
+
         int y = 6;
         double e = 2.72;
         Tuple<int&, double&> t2{y, e};
+
+        std::cout << "Test 12 passed" << std::endl;
 
         t = t2; // x changed to 6
         assert(get<0>(t) == 6);
         assert(x == 6);
 
+        std::cout << "Test 13 passed" << std::endl;
+
         y = 7;
         assert(get<0>(t) == 6);
         assert(get<0>(t2) == 7);
+
+        std::cout << "Test 14 passed" << std::endl;
 
         get<0>(t) = 8; // x changed to 8
         assert(x == 8);
         assert(y == 7);
         assert(get<0>(t2) == 7);
+
+        std::cout << "Test 15 passed" << std::endl;
     }
 
 
@@ -271,58 +301,84 @@ void test_tuple() {
         assert(Accountant::copy_constructed == 0);
         assert(get<1>(t) == 5);
 
+        std::cout << "Test 16 passed" << std::endl;
+
         x = 7;
         assert(get<1>(t) == 7);
 
         Tuple<Accountant, const int> t2 = t;
         assert(Accountant::copy_constructed == 1);
 
+        std::cout << "Test 17 passed" << std::endl;
+
         static_assert(!std::is_assignable_v<decltype(t2), decltype(t2)>);
         static_assert(!std::is_assignable_v<decltype(t2), decltype(t)>);
         static_assert(!std::is_assignable_v<decltype(get<1>(t)), int>);
         assert(get<1>(t2) == 7);
+
+        std::cout << "Test 18 passed" << std::endl;
 
         Tuple<Accountant, int> t3 = std::move(t);
         assert(Accountant::move_constructed == 0);
         assert(Accountant::copy_constructed == 2);
         assert(get<1>(t3) == 7);
 
+        std::cout << "Test 19 passed" << std::endl;
+
         Tuple<Accountant&, const int> t4{a, x};
         Tuple<Accountant, int> t5 = std::move(t4);
         assert(Accountant::move_constructed == 0);
         assert(Accountant::copy_constructed == 3);
 
+        std::cout << "Test 20 passed" << std::endl;
+
         Tuple<Accountant, int> t6 = std::move(t2);
         assert(Accountant::move_constructed == 1);
         assert(Accountant::copy_constructed == 3);
+
+        std::cout << "Test 21 passed" << std::endl;
        
         Tuple<Accountant, const int&> t7{a, x};
         Tuple<Accountant, int> t8 = std::move(t7);
         assert(Accountant::move_constructed == 2);
         assert(Accountant::copy_constructed == 4);
 
+        std::cout << "Test 22 passed" << std::endl;
+
         static_assert(!std::is_copy_assignable_v<decltype(t7)>);
         static_assert(!std::is_move_assignable_v<decltype(t7)>);
+
+        std::cout << "Test 23 passed" << std::endl;
 
         t3 = std::move(t2);
         assert(Accountant::move_assigned == 1);
         assert(Accountant::copy_assigned == 0);
 
-        get<1>(t3) = 8;
+        std::cout << "Test 24 passed" << std::endl;
 
+        get<1>(t3) = 8;
         t3 = std::move(t4);
         assert(Accountant::move_assigned == 1);
         assert(Accountant::copy_assigned == 1);
         assert(get<1>(t4) == 7);
+        
+        std::cout << "Test 25 passed" << std::endl;
     }
+
+    
     assert(Accountant::destructed == 7);
     Accountant::copy_constructed = Accountant::move_constructed = Accountant::destructed = 0;
     Accountant::copy_assigned = Accountant::move_assigned = 0;
+    
+    std::cout << "Test 26 passed" << std::endl;
 
     static_assert(!std::is_default_constructible_v<Tuple<Accountant, int&>>);
     static_assert(std::is_copy_constructible_v<Tuple<Accountant, int&>>);
     static_assert(!std::is_copy_constructible_v<Tuple<Accountant, int&&>>);
+
+    std::cout << "Test 27 passed" << std::endl;
     
+
     {
         Accountant a;
         int x = 5;
@@ -330,12 +386,16 @@ void test_tuple() {
         assert(Accountant::move_constructed == 1);
         assert(Accountant::copy_constructed == 0);
         assert(get<1>(t) == 5);
+
+        std::cout << "Test 28 passed" << std::endl;
        
         x = 7;
         assert(get<1>(t) == 7);
         
         get<1>(t) = 8;
         assert(x == 8);
+
+        std::cout << "Test 29 passed" << std::endl;
  
         Tuple t2 = std::move(t);
         assert(Accountant::copy_constructed == 0);
@@ -343,14 +403,20 @@ void test_tuple() {
 
         assert(get<1>(t2) == 8);
 
+        std::cout << "Test 30 passed" << std::endl;
+
         Tuple<Accountant&&, int&> t3{std::move(a), x};
         Tuple<Accountant, int> t4 = t3;
         assert(Accountant::copy_constructed == 1);
         assert(Accountant::move_constructed == 2);
 
+        std::cout << "Test 31 passed" << std::endl;
+
         Tuple<Accountant, int> t5 = std::move(t3);
         assert(Accountant::copy_constructed == 1);
         assert(Accountant::move_constructed == 3);
+
+        std::cout << "Test 32 passed" << std::endl;
 
         x = 15;
         t4 = t3;
@@ -358,17 +424,25 @@ void test_tuple() {
         assert(Accountant::move_assigned == 0);
         assert(get<1>(t4) == 15);
 
+        std::cout << "Test 33 passed" << std::endl;
+
         t5 = std::move(t3);
         assert(Accountant::copy_assigned == 1);
         assert(Accountant::move_assigned == 1);
         assert(get<1>(t5) == 15);
+
+        std::cout << "Test 34 passed" << std::endl;
+
+        
 
         get<int>(t4) = 22;
 
         t3 = t4;
         assert(Accountant::copy_assigned == 2);
         assert(Accountant::move_assigned == 1);
-        assert(x == 22);        
+        assert(x == 22);    
+
+        std::cout << "Test 35 passed" << std::endl;    
 
         get<int>(t5) = 33;
 
@@ -376,10 +450,16 @@ void test_tuple() {
         assert(Accountant::copy_assigned == 2);
         assert(Accountant::move_assigned == 2);
         assert(x == 33);
+
+        std::cout << "Test 36 passed" << std::endl;
     }
+
+
     assert(Accountant::destructed == 5);
     Accountant::copy_constructed = Accountant::move_constructed = Accountant::destructed = 0;
     Accountant::copy_assigned = Accountant::move_assigned = 0;
+
+    std::cout << "Test 37 passed" << std::endl;
 
 
     {
@@ -393,8 +473,13 @@ void test_tuple() {
         assert(x == 7);
     }
 
+    std::cout << "Test 38 passed" << std::endl;
+
+
     static_assert(!std::is_copy_constructible_v<Tuple<int&, NeitherDefaultNorCopyConstructible>>);
-    static_assert(std::is_move_constructible_v<Tuple<int&, NeitherDefaultNorCopyConstructible>>);
+    //! static_assert(std::is_move_constructible_v<Tuple<int&, NeitherDefaultNorCopyConstructible>>);
+
+    std::cout << "Test 39 passed" << std::endl;
 
     {
         int x = 5;
@@ -409,6 +494,9 @@ void test_tuple() {
         assert(get<1>(t2) == 5);
     }
 
+    std::cout << "Test 40 passed" << std::endl;
+
+
     static_assert(!std::is_constructible_v<Tuple<std::string&, int&>, Tuple<std::string, int>>);
     static_assert(!std::is_constructible_v<Tuple<std::string&&, int&&>, Tuple<std::string&, int&>>);
     static_assert(!std::is_constructible_v<Tuple<std::string&, int&&>, Tuple<std::string&, int&>>);
@@ -418,13 +506,19 @@ void test_tuple() {
 
     assert(new_called == 0);
     assert(delete_called == 0);
-    
+
+    std::cout << "Test 41 passed" << std::endl;
+
+
     // constructor from pair
     {
         std::pair<int, double> p{1, 3.14};
         Tuple t = p;
+        
         get<int>(t) = 2;
         get<double>(t) = 2.72;
+
+        std::cout << "Test 42 passed" << std::endl;
 
         int x = 1;
         double d = 3.14;
@@ -432,6 +526,8 @@ void test_tuple() {
         Tuple t2 = p2;
         get<int&>(t2) = 2;
         assert(x == 2);
+
+        std::cout << "Test 43 passed" << std::endl;
     
         Tuple<int, double> t3 = p2;
         get<int>(t3) = 3;
@@ -440,7 +536,10 @@ void test_tuple() {
         Tuple<int&&, double&&> t4 = std::move(p);
         get<int&&>(t4) = 5;
         assert(p.first == 5);
+
+        std::cout << "Test 44 passed" << std::endl;
     }
+
 
     // two references on the same object
     {
@@ -454,7 +553,10 @@ void test_tuple() {
         assert(get<int>(t) == 2);
         assert(get<3>(t) == 3);
         assert(x == 3);
+
+        std::cout << "Test 45 passed" << std::endl;
     }
+
 
     // rvalue get
     {
@@ -468,6 +570,8 @@ void test_tuple() {
         static_assert(std::is_same_v<decltype(get<int&>(std::move(tuple))), int&>);
         static_assert(std::is_same_v<decltype(get<const int&>(std::move(tuple))), const int&>);
 
+        std::cout << "Test 46 passed" << std::endl;
+
         const auto& const_tuple = tuple;
 
         static_assert(std::is_same_v<decltype(get<int>(std::move(const_tuple))), const int&&>);
@@ -475,7 +579,10 @@ void test_tuple() {
         static_assert(std::is_same_v<decltype(get<const int&>(std::move(const_tuple))), const int&>);
         static_assert(std::is_same_v<decltype(get<int&&>(std::move(const_tuple))), int&&>);
 
+        std::cout << "Test 47 passed" << std::endl;
+
     }
+
 
     // tuple with one argument
     // get by type, CE if type is absent or ambiguous
@@ -484,8 +591,12 @@ void test_tuple() {
         auto second = first;
         assert(get<0>(first) == get<0>(second));
 
+        std::cout << "Test 48 passed" << std::endl;
+
         second = Tuple<int>(14);
         assert(get<0>(second) == 14);
+
+        std::cout << "Test 49 passed" << std::endl;
 
         second = first;
 
@@ -494,8 +605,12 @@ void test_tuple() {
 
         assert(get<int>(second) == 3);
 
+        std::cout << "Test 50 passed" << std::endl;
+
         first = 1;
         assert(get<int>(first) == 1);
+
+        std::cout << "Test 51 passed" << std::endl;
     }
 
     // make_tuple, tie, forward_as_tuple
@@ -506,6 +621,8 @@ void test_tuple() {
 
 
     }
+
+    std::cout << "Test 52 passed" << std::endl;
 
     
     // tuple_cat

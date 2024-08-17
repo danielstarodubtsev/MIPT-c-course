@@ -593,8 +593,6 @@ class UnorderedMap {
  public:
   void swap(UnorderedMap& other) {
     pointers_to_nodes.swap(other.pointers_to_nodes);
-    // nodes.swap(other.nodes); //! What the fuck? This HAS to be 
-                                //! needed but somehow it only works without this line...
     std::swap(hash, other.hash);
     std::swap(equal, other.equal);
     
@@ -788,7 +786,6 @@ class UnorderedMap {
   }
 
  private:
-  
   template <bool IsConst>
   class base_iterator {
    private:
