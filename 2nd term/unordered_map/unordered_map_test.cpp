@@ -1,7 +1,12 @@
 #include "unordered_map.h"
 //#include <unordered_map>
 
-#include <bits/stdc++.h>
+#include <vector>
+#include <string>
+#include <iterator>
+#include <cassert>
+
+#include <iostream>
 
 /*template <typename Key, typename Value, typename Hash = std::hash<Key>, 
          typename EqualTo = std::equal_to<Key>, 

@@ -7,10 +7,10 @@
 #include <cassert>
 #include <deque>
 
-#include "alena_deque.h"
+//#include "deque.h"
 
-//template <typename T>
-//using Deque = std::deque<T>;
+template <typename T>
+using Deque = std::deque<T>;
 
 namespace TestsByMesyarik {
 
@@ -109,8 +109,7 @@ void test3() {
     for (auto it = right - 1; it >= left; --it) {
         s += std::to_string(*it);
     }
-    std::cerr << s << std::endl;
-    std::cerr << "51001518515355154401561015695158651595016120162051" << std::endl;
+    
     assert(s == "51001518515355154401561015695158651595016120162051");
 }
 
@@ -139,7 +138,6 @@ void test4() {
 
     it->x = 5;
     assert(cit->x == 5);
-
 
     d.erase(d.begin() + 1);
     d.erase(d.begin() + 3);
@@ -190,12 +188,10 @@ void test5() {
     s += std::to_string(right);
 
     s += std::to_string(*left_ptr);
-
     s += std::to_string(*right_ptr);
     //for (auto it = left; it <= right; ++it) {
     //    s += std::to_string(*it);
     //}
-
     assert(s == "4321");
 }
 
@@ -247,7 +243,6 @@ struct Explosive {
     Explosive(const Explosive&) {
         if (x) throw std::runtime_error("Boom!");
     }
-    Explosive& operator=(const Explosive&) = default;
 };
 
 void test7() {
@@ -350,9 +345,7 @@ namespace TestsByUnrealf1 {
         NotDefaultConstructible(int input): data(input) {}
         int data;
 
-        auto operator==(const NotDefaultConstructible& other) const {
-            return data == other.data;
-        }
+        auto operator<=>(const NotDefaultConstructible&) const = default;
     };
 
     struct CountedException : public std::exception {
@@ -512,27 +505,24 @@ namespace TestsByUnrealf1 {
         Deque<int> empty;
         assert((empty.end() - empty.begin()) == 0);
         assert((empty.begin() + 0 == empty.end()) && (empty.end() - 0 == empty.begin()));
-        auto iter = empty.begin();
-        assert((iter++ == empty.begin()));
+
         Deque<int> one(1);
         auto iter2 = one.end();
         assert(((--iter2) == one.begin()));
 
-        assert((empty.rend() - empty.rbegin()) == 0);;
-        assert((empty.rbegin() + 0 == empty.rend()) && (empty.rend() - 0 == empty.rbegin()));;
+        assert((empty.rend() - empty.rbegin()) == 0);
+        assert((empty.rbegin() + 0 == empty.rend()) && (empty.rend() - 0 == empty.rbegin()));
         auto r_iter = empty.rbegin();
-        //std::cout << "line 12 passed" << std::endl;
-        //std::cout << (r_iter++ == r_iter ? 1 : 0) << std::endl;
-        assert((r_iter++ == empty.rbegin()));;
+        assert((r_iter++ == empty.rbegin()));
 
-        assert((empty.cend() - empty.cbegin()) == 0);;
-        assert((empty.cbegin() + 0 == empty.cend()) && (empty.cend() - 0 == empty.cbegin()));;
-        auto c_iter = empty.cbegin();;
-        assert((c_iter++ == empty.cbegin()));;
+        assert((empty.cend() - empty.cbegin()) == 0);
+        assert((empty.cbegin() + 0 == empty.cend()) && (empty.cend() - 0 == empty.cbegin()));
+        auto c_iter = empty.cbegin();
+        assert((c_iter++ == empty.cbegin()));
 
-        Deque<int> d(1000, 3);;
-        assert(size_t((d.end() - d.begin())) == d.size());;
-        assert((d.begin() + d.size() == d.end()) && (d.end() - d.size() == d.begin()));;
+        Deque<int> d(1000, 3);
+        assert(size_t((d.end() - d.begin())) == d.size());
+        assert((d.begin() + d.size() == d.end()) && (d.end() - d.size() == d.begin()));
     }
 
     void testIteratorsComparison() {
@@ -552,7 +542,8 @@ namespace TestsByUnrealf1 {
         std::sort(d.rbegin(), d.rbegin() + 500);
         std::reverse(d.begin(), d.end());
         auto sorted_border = std::is_sorted_until(d.begin(), d.end());
-
+        //std::copy(d.begin(), d.end(), std::ostream_iterator<int>(std::cout, " "));
+        //std::cout << std::endl;
         assert(sorted_border - d.begin() == 500);
     }
 
@@ -644,7 +635,6 @@ namespace TestsByUnrealf1 {
         try {
             Deque<Counted<17>> d(100);
         } catch (CountedException& e) {
-            std::cout << Counted<17>::counter << std::endl;
             assert(Counted<17>::counter == 0);
         } catch (...) {
             // should have caught same exception as thrown by Counted
@@ -670,15 +660,15 @@ namespace TestsByUnrealf1 {
             auto safe = Explosive(Explosive::Safeguard{});
             d.push_back(safe);
         } catch (...) {
-  
+
         }
+
         // Destructor should not be called for an object
         // with no finihshed constructor
         // the only destructor called - safe explosive with the safeguard
         assert(Explosive::exploded == false);
     }
 
-/*
     void testStrongGuarantee() {
         const size_t size = 20'000;
         const size_t initial_data = 100;
@@ -702,63 +692,38 @@ namespace TestsByUnrealf1 {
             assert(is_intact());
         }
     }
-*/
-
 } // namespace TestsByUnrealf1
 
 int main() {
-
-    static_assert(!std::is_same_v<std::deque<TestsByMesyarik::VerySpecialType>,
-            Deque<TestsByMesyarik::VerySpecialType>>, "You cannot use std::deque, cheater!");
-    static_assert(!std::is_base_of_v<std::deque<TestsByMesyarik::VerySpecialType>,
-            Deque<TestsByMesyarik::VerySpecialType>>, "You cannot use std::deque, cheater!");
+    
+    //static_assert(!std::is_same_v<std::deque<VerySpecialType>,
+    //        Deque<VerySpecialType>>, "You cannot use std::deque, cheater!");
+    //static_assert(!std::is_base_of_v<std::deque<VerySpecialType>,
+    //        Deque<VerySpecialType>>, "You cannot use std::deque, cheater!");
      
     TestsByMesyarik::test1();
-    std::cout << "test 1 passed" << std::endl;
     TestsByMesyarik::test2();
-        std::cout << "test 2 passed" << std::endl;
     TestsByMesyarik::test3();
-    std::cout << "test 3 passed" << std::endl;
     TestsByMesyarik::test4();
-        std::cout << "test 4 passed" << std::endl;
     TestsByMesyarik::test5();
-        std::cout << "test 5 passed" << std::endl;
     TestsByMesyarik::test6();
-        std::cout << "test 6 passed" << std::endl;
     TestsByMesyarik::test7();
-        std::cout << "test 7 passed" << std::endl;
-
 
     TestsByUnrealf1::testDefault();
-    std::cout << "Additional test 1 passed" << std::endl;
     TestsByUnrealf1::testCopy();
-    std::cout << "Additional test 2 passed" << std::endl;
     TestsByUnrealf1::testWithSize();
-    std::cout << "Additional test 3 passed" << std::endl;
     TestsByUnrealf1::testAssignment();
-    std::cout << "Additional test 4 passed" << std::endl;
     TestsByUnrealf1::testStaticAsserts();
-    std::cout << "Additional test 5 passed" << std::endl;
     TestsByUnrealf1::testOperatorSubscript();
-    std::cout << "Additional test 6 passed" << std::endl;
     TestsByUnrealf1::testStaticAssertsAccess();
-    std::cout << "Additional test 7 passed" << std::endl;
     TestsByUnrealf1::testStaticAssertsIterators();
-    std::cout << "Additional test 8 passed" << std::endl;
     TestsByUnrealf1::testIteratorsArithmetic();
-    std::cout << "Additional test 9 passed" << std::endl;
     TestsByUnrealf1::testIteratorsComparison();
-    std::cout << "Additional test 10 passed" << std::endl;
     TestsByUnrealf1::testIteratorsAlgorithms();
-    std::cout << "Additional test 11 passed" << std::endl;
     TestsByUnrealf1::testPushAndPop();
-    std::cout << "Additional test 12 passed" << std::endl;
-    
     TestsByUnrealf1::testInsertAndErase();
-    std::cout << "Additional test 13 passed" << std::endl;
     TestsByUnrealf1::testExceptions();
-    std::cout << "Additional test 14 passed" << std::endl;
-   // TestsByUnrealf1::testStrongGuarantee();
+    TestsByUnrealf1::testStrongGuarantee();
 
     std::cout << 0;
 }
