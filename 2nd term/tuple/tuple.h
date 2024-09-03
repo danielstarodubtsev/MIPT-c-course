@@ -379,24 +379,6 @@ constexpr const T&& get(const Tuple<Types...>&& tuple) {
   }
 }
 
-template <typename...>
-struct TupleCatResultType;
-
-template <>
-struct TupleCatResultType<> {
-  using type = Tuple<>;
-};
-
-template <typename... Types>
-struct TupleCatResultType<Tuple<Types...>> {
-  using type = Tuple<Types...>;
-};
-
-template <typename... Types1, typename... Types2, typename... Types3>
-struct TupleCatResultType<Tuple<Types1...>, Tuple<Types2...>, Types3...> {
-  using type = typename TupleCatResultType<Tuple<Types1..., Types2...>, Types3...>::type;
-};
-
 template <size_t Index, typename... TupleArgs, typename... Other>
 constexpr auto get_index(Tuple<TupleArgs...>& tuple, Other&&... other) {
   if constexpr (sizeof...(TupleArgs) <= Index) {
