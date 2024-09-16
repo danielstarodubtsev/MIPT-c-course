@@ -754,9 +754,9 @@ class UnorderedMap {
     if (!std::allocator_traits<Alloc>::propagate_on_container_move_assignment::value &&
         alloc != other.alloc) {
       // we have no choice but to move every element individually
+      clear();
       insert(std::make_move_iterator(other.begin()), std::make_move_iterator(other.end()));
-      other.clear(); // i'm not sure this is needed, 
-                     // might already be cleared because of "make_move_iterator"
+      other.clear();
     } else {
       pointers_to_nodes = std::move(other.pointers_to_nodes);
       nodes = std::move(other.nodes);
@@ -775,12 +775,12 @@ class UnorderedMap {
   }
 
   UnorderedMap& operator=(const UnorderedMap& other) {
-    UnorderedMap copy = other;
-    swap(copy);
-
     if constexpr (std::allocator_traits<Alloc>::propagate_on_container_copy_assignment::value) {
       alloc = other.alloc;
     }
+
+    UnorderedMap copy = other;
+    swap(copy);
 
     return *this;
   }

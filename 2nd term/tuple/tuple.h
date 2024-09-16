@@ -80,9 +80,9 @@ class Tuple<Head, Tail...> {
   Tuple<Tail...> tail;
 
  public:
-  void swap(const Tuple& other) {
+  void swap(Tuple& other) {
     std::swap(head, other.head);
-    std::swap(tail, other.tail);
+    tail.swap(other.tail);
   }
 
   template <size_t N, typename Head1, typename Head2, typename... NewTail>
